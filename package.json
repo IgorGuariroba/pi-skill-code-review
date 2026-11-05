@@ -1,0 +1,24 @@
+{
+  "name": "@igor-guari/pi-skill-code-review",
+  "version": "1.0.0",
+  "description": "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code fol",
+  "keywords": [
+    "pi-package",
+    "pi-skill",
+    "pi",
+    "code-review",
+    "engineering-skills"
+  ],
+  "author": "Igor Guariroba",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IgorGuariroba/pi-skill-code-review.git"
+  },
+  "homepage": "https://github.com/IgorGuariroba/pi-skill-code-review#readme",
+  "pi": {
+    "skills": [
+      "."
+    ]
+  }
+}
