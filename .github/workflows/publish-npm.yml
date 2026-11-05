@@ -1,0 +1,52 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    environment: npm
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate tag (on main and equals package.json version)
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          git merge-base --is-ancestor HEAD origin/main || {
+            echo "::error::Tag $TAG is not in the history of origin/main"; exit 1; }
+          expected="v$(node -p 'require("./package.json").version')"
+          [ "$TAG" = "$expected" ] || {
+            echo "::error::Tag $TAG differs from package.json version ($expected)"; exit 1; }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Install latest npm
+        run: npm install --global npm@latest
+
+      - name: Dry run package check
+        run: npm pack --dry-run
+
+      - name: Publish with Provenance
+        run: npm publish --access public --provenance
